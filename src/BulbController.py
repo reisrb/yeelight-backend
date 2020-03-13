@@ -64,6 +64,7 @@ def setBright(req):
     status = getProperties(listBulbs[0])
 
     for bulb in listBulbs:
+        time.sleep(1)
         bulb.set_brightness(int(bright))
 
     cron.edit(len(listBulbs), idEnv, nameEnv, status['bright'])
