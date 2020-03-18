@@ -4,11 +4,9 @@ import src.utils as utils
 import src.CronJob as cron
 import time
 
-lampada1 = '10.1.2.66'
-lampada2 = '10.1.2.65'
-lampada3 = '10.1.2.69'
+lampadas = ['10.3.0.21', '10.3.0.22', '10.3.0.23']
 
-environments=[{"id": 1,"nome":"Biblioteca", "lados": [{"id":100,"nome": "FRENTE", "ips": [lampada1]},{"id":0,"nome": "TUDO", "ips":[lampada1, lampada2]},{"id":200,"nome": "TRAS", "ips": [lampada2]}]},{"id": 2,"nome":"1B", "lados": [{"id":100, "nome": "FRENTE", "ips": [lampada3]},{"id":200, "nome": "TRAS", "ips": [lampada3]}]},{"id": 0,"nome":"TUDOTUDO", "lados": [{"id":0, "nome": "TUDO", "ips": [lampada2, lampada1, lampada3]}]}]
+environments=[{"id": 1,"nome":"Biblioteca", "lados": [{"id":100,"nome": "FRENTE", "ips": [lampadas[0]]},{"id":0,"nome": "TUDO", "ips":[lampadas[0], lampadas[1]]},{"id":200,"nome": "TRAS", "ips": [lampadas[1]]}]},{"id": 2,"nome":"1B", "lados": [{"id":100, "nome": "FRENTE", "ips": [lampadas[2]]},{"id":200, "nome": "TRAS", "ips": [lampadas[2]]}]},{"id": 0,"nome":"TUDOTUDO", "lados": [{"id":0, "nome": "TUDO", "ips": [lampadas[0], lampadas[1], lampadas[2]]}]}]
 bulbs = []
 
 def getEnv():
