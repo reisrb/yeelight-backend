@@ -20,4 +20,5 @@ def instructions(req, env):
                             print('{} is not a number!'.format(line))
             except:
                 pass
-    return f'{total:.5f}' if total != 0.0 else 'Sem registros'
+            
+    return f'{total:.2f}' if total != 0.0 else 'Sem registros'

@@ -4,7 +4,9 @@ import src.utils as utils
 import src.CronJob as cron
 import time
 
-environments=[{"id": 1,"nome":"Biblioteca", "lados": [{"id":100,"nome": "FRENTE", "ips": ['10.3.0.21']},{"id":0,"nome": "TUDO", "ips":['10.3.0.21', '10.3.0.22']},{"id":200,"nome": "TRAS", "ips": ['10.3.0.22']}]},{"id": 2,"nome":"1B", "lados": [{"id":100, "nome": "FRENTE", "ips": ['10.3.0.23']},{"id":200, "nome": "TRAS", "ips": ['10.3.0.23']}]},{"id": 0,"nome":"TUDOTUDO", "lados": [{"id":0, "nome": "TUDO", "ips": ['10.3.0.21', '10.3.0.22', '10.3.0.23']}]}]
+lampadas = ['10.3.0.21', '192.168.255.14', '10.3.0.23']
+
+environments=[{"id": 1,"nome":"Biblioteca", "lados": [{"id":100,"nome": "FRENTE", "ips": [lampadas[0]]},{"id":0,"nome": "TUDO", "ips":[lampadas[0], lampadas[1]]},{"id":200,"nome": "TRAS", "ips": [lampadas[1]]}]},{"id": 2,"nome":"1B", "lados": [{"id":100, "nome": "FRENTE", "ips": [lampadas[2]]},{"id":200, "nome": "TRAS", "ips": [lampadas[2]]}]},{"id": 0,"nome":"TUDOTUDO", "lados": [{"id":0, "nome": "TUDO", "ips": [lampadas[0], lampadas[1], lampadas[2]]}]}]
 bulbs = []
 
 def getEnv():
@@ -64,7 +66,6 @@ def setBright(req):
     status = getProperties(listBulbs[0])
 
     for bulb in listBulbs:
-        time.sleep(1)
         bulb.set_brightness(int(bright))
 
     cron.edit(len(listBulbs), idEnv, nameEnv, status['bright'])
@@ -77,11 +78,13 @@ def setColor(req):
     r = req.json.get('r')
     g = req.json.get('g')
     b = req.json.get('b')
-    
+
     for bulb in listBulbs:
+        bulb.set_color_temp(4700)
         bulb.set_rgb(r, g, b)
-
-
+        if r and g and b == 255:
+            bulb.set_color_temp(8000)
+        
 def bandtecColor(req):
     listBulbs, _, _ = utils.getSide(req, environments, bulbs)
     idEnv = 0
