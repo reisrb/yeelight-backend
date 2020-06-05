@@ -1,20 +1,15 @@
-from datetime import date
+import datetime 
 import sys
 import os
 
 path = os.path.dirname(os.path.abspath(__file__))
-# path = os.path.abspath(os.getcwd())
 
-amountLamp = int(sys.argv[1])
-nameEnv = sys.argv[2]
-bright = int(sys.argv[3])
+amountLamp, nameEnv, bright = (int(sys.argv[1]), sys.argv[2], int(sys.argv[3]))
 
-print(amountLamp, nameEnv, bright)
-    
-# x = datetime.datetime.now()
-date = date.today.strftime("%d/%m/%Y")
-# date = f'{x.day:02d}/{x.month:02d}/{x.year}'
+d = datetime.datetime.now()
 
-with open('{path}/../logs/{nameEnv}.txt'.format(path, nameEnv), 'a') as outFile:
+date = f'{d.strftime("%d")}/{d.strftime("%m")}/{d.strftime("%Y")}'
+
+with open(f'{path}/../logs/{nameEnv}.txt', 'a') as outFile:
     cost = (amountLamp*0.0028)*(bright/100)
-    outFile.write('{} - {:.5f}  \n'.format(date, cost))
+    outFile.write(f'{date} - {cost:.5f}  \n')

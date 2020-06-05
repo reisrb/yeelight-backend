@@ -2,11 +2,13 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 import src.BulbController as BulbController
+import src.CronRead as CronRead
 import time
 
 app = Flask(__name__)
 CORS(app)
 
+# rotas da API para especificar qual metodo vai ser executado ao disparar
 
 @app.route('/status', methods=['POST'])
 def status():
@@ -50,12 +52,14 @@ def projetorSala():
     return jsonify("Projetor ativado")
 
 
-@app.route('/sumMonth', methods=['GET'])
+@app.route('/month', methods=['POST'])
 def sumMonth():
-    env = BulbController.environments
-    sumM = CronRead.instructions(request, env)
+    # env = BulbController.environments
+    sumM = CronRead.instructions(request)
     return jsonify(sumM)
 
 
+
+# bloco para especificar aonde queremos que nosso código seja executado apenas sob condições especiais
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)

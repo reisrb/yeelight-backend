@@ -2,23 +2,20 @@ import os
 
 path = os.path.dirname(os.path.abspath(__file__))
 
-def instructions(req, env):
-    nameEnv = req.args.get('nomeAmbiente')
-
-    print(nameEnv)
-
+# def instructions(req, env):
+def instructions(req):
+    nameEnv = req.json.get('nomeSala')
+    mes = '05'
     total = 0.0
 
-    for value in env:
-        if value.get('nome') == nameEnv:
+    try:
+        f = open(f'{path}/../logs/{nameEnv}.txt', 'r')
+        for line in f:
             try:
-                with open(f'{path}/../logs/{nameEnv}.txt', 'r') as rFile:
-                    for line in rFile:
-                        try:
-                            total += float(line.split('-')[1].strip()) 
-                        except ValueError:
-                            print('{} is not a number!'.format(line))
-            except:
-                pass
+                total += float(line.split('-')[1].strip()) 
+            except ValueError:
+                print(f'{line} is not a number!')
+    except:
+        pass
             
-    return f'{total:.2f}' if total != 0.0 else 'Sem registros'
+    return f'{total:.5f}' if total != 0.0 else 'Sem registros'

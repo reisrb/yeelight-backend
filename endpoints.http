@@ -21,6 +21,14 @@ content-Type: application/json
 
 
 ###
+POST {{url}}/month HTTP/1.1
+Content-Type: application/json
+
+{
+	"nomeSala":"SALA-1B"
+}
+
+###
 
 POST {{url}}/desligar HTTP/1.1
 content-Type: application/json

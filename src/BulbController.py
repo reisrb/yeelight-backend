@@ -3,32 +3,38 @@ import src.utils as utils
 import src.CronJob as cron
 import time
 
+# todos os metodos utilizam da "classe" utils para o processamento e conversão dos ips do front para a lib da yeelight
+
+# pegar estado atual da lampada especificada por parâmetro 
 def getProperties(bulb):
     return bulb.get_properties(requested_properties=[
         "power", "bright", "rgb", "color_mode", "flow", "name", "ct", ])
 
+# metodo a ser executado ao inicializar uma página web para ser a primeira rota do estado atual da lampada
 def getStatus(req):
     bulbs, _ , _ = utils.getIp(req)
     return getProperties(bulbs[0])
 
+# Aqui temos dois metodos iguais (turnOn e turnOff) com especificação para esquema de toggle não confudir o usuário
+# e ele desligar o front e a lampada ligar "do nada"
 def turnOn(req):
     ba = 0
     bna = ""
     bulbStatus = 0
-    bulbs, idEnv, nameEnv = utils.getIp(req)
+    bulbs, idEnv, nameEnv = utils.getIp(req) # desestruturando o retorno em var's independentes
 
     for bulb in bulbs:
         try:
             bulb.turn_on()
             ba += 1
-            bulbStatus = bulb
+            bulbStatus = bulb # setando na variavel pelo menos a ultima lampada que ligou com êxito
         except :
-            bna += f'({bulb})/mac'
+            bna += f'({bulb})/mac\n'  # setando na variavel lampadas que não ligou com êxito
             pass
 
-    bulbsOn = getProperties(bulbStatus)
+    bulbsOn = getProperties(bulbStatus) # pegando estado atual da lampada referência que ligou com êxito
  
-    cron.enable(ba, idEnv, nameEnv, bulbsOn['bright'])
+    cron.enable(ba, idEnv, nameEnv, bulbsOn['bright']) # ativando cron para a gravação de logs
     return f'ligou {ba} ----- não ligou {bna}'
 
 def turnOff(req):
@@ -43,7 +49,7 @@ def turnOff(req):
             ba += 1
             bulbStatus = bulb
         except :
-            bna += f'({bulb})/mac'
+            bna += f'({bulb})/mac\n'
             pass
 
     bulbsOn = getProperties(bulbStatus)
@@ -52,6 +58,7 @@ def turnOff(req):
     return f'desligou {ba} ----- não desligou {bna}'
 
 
+# setar brilho repetindo basicamente o mesmo processo
 
 def setBright(req):
     ba = 0
