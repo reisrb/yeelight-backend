@@ -15,7 +15,7 @@ def instructions(req, env):
                 with open(f'{path}/../logs/{nameEnv}.txt', 'r') as rFile:
                     for line in rFile:
                         try:
-                            total += float(line[13:20]) 
+                            total += float(line.split('-')[1].strip()) 
                         except ValueError:
                             print('{} is not a number!'.format(line))
             except:

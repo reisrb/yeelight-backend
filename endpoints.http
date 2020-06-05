@@ -1,6 +1,8 @@
-@url = http://10.3.3.34:5000
+@url = http://localhost:5000
 
-GET {{url}}/ambiente?idAmbiente=0 HTTP/1.1
+# GET {{url}}/user HTTP/1.1
+
+GET {{url}}/ambiente HTTP/1.1
 
 ###
 
@@ -8,9 +10,52 @@ GET {{url}}/sumMonth?nomeAmbiente=TUDOTUDO HTTP/1.1
 
 ###
 
-# POST {{url}}/abientes HTTP/1.1
-# Content-Type: application/json
+POST {{url}}/ligar HTTP/1.1
+content-Type: application/json
 
-# {
-#     "":""
-# }
+{
+	"idSala":1,
+	"nomeSala":"SALA-1B",
+	"ip":["192.168.255.7","192.168.255.8"]
+}
+
+
+###
+
+POST {{url}}/desligar HTTP/1.1
+content-Type: application/json
+
+{
+	"idSala":1,
+	"nomeSala":"SALA-1B",
+	"ip":["192.168.255.7","192.168.255.8"]	
+}
+
+###
+
+GET http://localhost:3333/user HTTP/1.1
+
+###
+
+POST {{url}}/definirBrilho HTTP/1.1
+Content-Type: application/json
+
+{
+	"ip":["192.168.255.7"],
+	"idSala":1,
+	"nomeSala":"SALA-1B",
+	"brilho":1
+}
+
+###
+
+POST {{url}}/status HTTP/1.1
+Content-Type: application/json
+
+{
+	"idSala":1,
+	"nomeSala":"SALA-1B",
+	"ip":["192.168.255.7"]		
+}
+
+# POST {{url}}/ambientes HTTP/1.1

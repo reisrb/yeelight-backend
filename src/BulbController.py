@@ -1,76 +1,71 @@
 from yeelight import Bulb
-
 import src.utils as utils
 import src.CronJob as cron
 import time
 
-lampadas = ['10.3.0.21', '192.168.255.14', '10.3.0.23']
-
-environments=[{"id": 1,"nome":"Biblioteca", "lados": [{"id":100,"nome": "FRENTE", "ips": [lampadas[0]]},{"id":0,"nome": "TUDO", "ips":[lampadas[0], lampadas[1]]},{"id":200,"nome": "TRAS", "ips": [lampadas[1]]}]},{"id": 2,"nome":"1B", "lados": [{"id":100, "nome": "FRENTE", "ips": [lampadas[2]]},{"id":200, "nome": "TRAS", "ips": [lampadas[2]]}]},{"id": 0,"nome":"TUDOTUDO", "lados": [{"id":0, "nome": "TUDO", "ips": [lampadas[0], lampadas[1], lampadas[2]]}]}]
-bulbs = []
-
-def getEnv():
-    return environments
-
-def start():
-    for value in environments:
-        for key in value.get('lados'): 
-            for ip in key.get('ips'):
-                try:
-                    bulbs.append(Bulb(ip, effect="smooth")) 
-                except Exception as e:
-                    print(e)
-
 def getProperties(bulb):
     return bulb.get_properties(requested_properties=[
-                          "power", "bright", "rgb", "color_mode", "flow", "name","ct",])
+        "power", "bright", "rgb", "color_mode", "flow", "name", "ct", ])
 
 def getStatus(req):
-    listBulbs, _, _ = utils.getSide(req, environments, bulbs)
-
-    return getProperties(listBulbs[0])
+    bulbs, _ , _ = utils.getIp(req)
+    return getProperties(bulbs[0])
 
 def turnOn(req):
-    listBulbs, idEnv, nameEnv = utils.getSide(req, environments, bulbs)
-    status = getProperties(listBulbs[0])
+    ba = 0
+    bna = ""
+    bulbStatus = 0
+    bulbs, idEnv, nameEnv = utils.getIp(req)
 
-    for bulb in listBulbs:
+    for bulb in bulbs:
         try:
             bulb.turn_on()
+            ba += 1
+            bulbStatus = bulb
         except :
+            bna += f'({bulb})/mac'
             pass
 
-    cron.enable(len(listBulbs), idEnv, nameEnv, status['bright'])
-
-    return status
+    bulbsOn = getProperties(bulbStatus)
+ 
+    cron.enable(ba, idEnv, nameEnv, bulbsOn['bright'])
+    return f'ligou {ba} ----- não ligou {bna}'
 
 def turnOff(req):
-    listBulbs, idEnv, nameEnv = utils.getSide(req, environments, bulbs)    
-    status = getProperties(listBulbs[0])
+    ba = 0
+    bna = ""
+    bulbStatus = 0
+    bulbs, idEnv, nameEnv = utils.getIp(req)
 
-    for bulb in listBulbs:
+    for bulb in bulbs:
         try:
             bulb.turn_off()
+            ba += 1
+            bulbStatus = bulb
         except :
+            bna += f'({bulb})/mac'
             pass
-        
 
-    cron.disable(len(listBulbs), idEnv, nameEnv, status['bright'])
+    bulbsOn = getProperties(bulbStatus)
 
-    return status
+    cron.disable(ba, idEnv, nameEnv, bulbsOn['bright'])
+    return f'desligou {ba} ----- não desligou {bna}'
+
+
 
 def setBright(req):
+    ba = 0
     bright = req.json.get('brilho')
-    
-    listBulbs, idEnv, nameEnv = utils.getSide(req, environments, bulbs)    
-    status = getProperties(listBulbs[0])
+    bulbs, idEnv, nameEnv = utils.getIp(req)
 
-    for bulb in listBulbs:
+    for bulb in bulbs:
         bulb.set_brightness(int(bright))
+        bulbsStatus = getProperties(bulb)
+        ba += 1
 
-    cron.edit(len(listBulbs), idEnv, nameEnv, status['bright'])
+    cron.edit(ba, idEnv, nameEnv, bulbsStatus['bright']) 
+    return f"Brilho alterado de {ba} lampadas para {bulbsStatus['bright']}"
 
-    return status
 
 def setColor(req):
     listBulbs, _, _ = utils.getSide(req, environments, bulbs)
@@ -84,14 +79,15 @@ def setColor(req):
         bulb.set_rgb(r, g, b)
         if r and g and b == 255:
             bulb.set_color_temp(8000)
-        
+
+
 def bandtecColor(req):
     listBulbs, _, _ = utils.getSide(req, environments, bulbs)
     idEnv = 0
     nameEnv = 'TUDOTUDO'
 
     status = getProperties(listBulbs[0])
-    
+
     listBulbs[0].set_rgb(240, 10, 60)
     listBulbs[1].set_rgb(239, 182, 97)
     listBulbs[2].set_rgb(0, 131, 183)
