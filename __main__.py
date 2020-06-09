@@ -34,7 +34,7 @@ def definirBrilho():
     return jsonify("Brilho alterado")
 
 
-@app.route('/setCor', methods=['POST'])
+@app.route('/definirCor', methods=['POST'])
 def definirCor():
     BulbController.setColor(request)
     return jsonify("Cor alterada")
@@ -46,15 +46,14 @@ def bandtec():
     return jsonify("cor bandtec")
 
 
-@app.route('/projetorSala', methods=['POST'])
+@app.route('/setFlow', methods=['POST'])
 def projetorSala():
-    BulbController.projetor(request)
+    BulbController.flow(request)
     return jsonify("Projetor ativado")
 
 
 @app.route('/month', methods=['POST'])
 def sumMonth():
-    # env = BulbController.environments
     sumM = CronRead.instructions(request)
     return jsonify(sumM)
 
