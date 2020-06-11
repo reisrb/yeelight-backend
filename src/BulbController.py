@@ -1,4 +1,4 @@
-from yeelight import Bulb
+from yeelight import *
 import src.utils as utils
 import src.CronJob as cron
 
@@ -94,31 +94,34 @@ def setColor(req):
 
 def bandtecColor(req):
     bulbs, _, _ = utils.getIp(req)
-    idEnv = 0
-    nameEnv = ''
-    a = 0
 
-    status = getProperties(bulbs[0])
+    transitions = [
+        RGBTransition(240, 10, 60, duration=4500),
+        RGBTransition(239, 182, 97, duration=4500),
+        RGBTransition(0, 131, 183, duration=4500),
+    ]
 
-    bulbs[0].set_rgb(240, 10, 60)
-    bulbs[1].set_rgb(239, 182, 97)
-    bulbs[2].set_rgb(0, 131, 183)
+    flow = Flow(
+        count=0,
+        action=Flow.actions.recover,
+        transitions=transitions
+    )
 
     for bulb in bulbs:
-        try:
-            bulb.turn_on()
-            a += 1
-        except:
-            pass
-
-    cron.enable(a, idEnv, nameEnv, status['bright'])
-
+        bulb.start_flow(flow)
 
 def flow(req):
+    transitions = [
+        HSVTransition(hue, 100, duration=500)
+               for hue in range(0, 359, 40)]
 
+    flow = Flow(
+        count=0,
+        transitions=transitions
+    )
     bulbs, _, _ = utils.getIp(req)
-
+    
     for bulb in bulbs:
-        bulb.set_color(255, 255, 255)
-        print('foi')
-        # cron.edit(len(front), idEnv, nameEnv, 1)
+        bulb.start_flow(flow)
+
+
