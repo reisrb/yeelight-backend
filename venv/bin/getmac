@@ -1,4 +1,4 @@
-#!/home/reis/PycharmProjects/yeelight-backend/venv/bin/python
+#!/home/reis/Documents/GIT/yeelight-backend/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

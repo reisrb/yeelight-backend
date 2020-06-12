@@ -11,10 +11,10 @@ def getProperties(bulb):
 
 # metodo a ser executado ao inicializar euma página web para ser a primeira rota do estado atual da lampada
 def getStatus(req):
-    bulbs, _, _ = utils.getIp(req)
+    bulbs = utils.getIp(req)
     for i in bulbs:
         if(i != ''):
-            return getProperties(i)
+            return getProperties(bulbs[0])
 
 # Aqui temos dois metodos iguais (turnOn e turnOff) com especificação para esquema de toggle não confudir o usuário
 # e ele desligar o front e a lampada ligar "do nada"
@@ -78,8 +78,7 @@ def setBright(req):
 
 
 def setColor(req):
-    
-    bulbs, _, _ = utils.getIp(req)
+    bulbs = utils.getIp(req)
 
     r = int(req.json.get('r'))
     g = int(req.json.get('g'))
@@ -87,18 +86,18 @@ def setColor(req):
 
     for bulb in bulbs:
         bulb.set_rgb(r, g, b)
-        # bulb.set_color_temp(6700)
-        # if r and g and b == 255:
-        #     bulb.set_color_temp(6700)
+        if r and g and b == 255:
+            bulb.set_color_temp(6491)
 
 
 def bandtecColor(req):
-    bulbs, _, _ = utils.getIp(req)
+    bulbs = utils.getIp(req)
 
     transitions = [
-        RGBTransition(240, 10, 60, duration=4500),
+        RGBTransition(7, 98, 200, duration=4500),
+        RGBTransition(99, 177, 188, duration=4500),
+        RGBTransition(237, 20, 91, duration=4500),
         RGBTransition(239, 182, 97, duration=4500),
-        RGBTransition(0, 131, 183, duration=4500),
     ]
 
     flow = Flow(
@@ -119,7 +118,8 @@ def flow(req):
         count=0,
         transitions=transitions
     )
-    bulbs, _, _ = utils.getIp(req)
+
+    bulbs = utils.getIp(req)
     
     for bulb in bulbs:
         bulb.start_flow(flow)
