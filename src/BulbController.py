@@ -85,9 +85,12 @@ def setColor(req):
     b = int(req.json.get('b'))
 
     for bulb in bulbs:
-        bulb.set_rgb(r, g, b)
-        if r and g and b == 255:
-            bulb.set_color_temp(6491)
+        try:
+            bulb.set_rgb(r, g, b)
+            if r and g and b == 255:
+                bulb.set_color_temp(6491)
+        except:
+            pass
 
 
 def bandtecColor(req):
