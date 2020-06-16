@@ -12,9 +12,9 @@ def getProperties(bulb):
 # metodo a ser executado ao inicializar euma página web para ser a primeira rota do estado atual da lampada
 def getStatus(req):
     bulbs = utils.getIp(req)
-    for i in bulbs:
-        if(i != ''):
-            return getProperties(bulbs[0])
+    # for i in bulbs:
+    #     if(i != ''):
+    return getProperties(bulbs[0])
 
 # Aqui temos dois metodos iguais (turnOn e turnOff) com especificação para esquema de toggle não confudir o usuário
 # e ele desligar o front e a lampada ligar "do nada"

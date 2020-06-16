@@ -6,6 +6,8 @@ def getIp(req): #recebendo req como paramentro que seria o ip da sala, nome e ip
     nameEnv = req.json.get('idSala')
     idEnv = req.json.get('nomeSala')
 
+    print(req.json)
+
     #pegar mac
 
     # bulbsWlan = []
