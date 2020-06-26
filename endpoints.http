@@ -1,16 +1,97 @@
-@url = http://10.3.3.34:5000
+@url = http://localhost:5000
 
-GET {{url}}/ambiente?idAmbiente=0 HTTP/1.1
+# GET {{url}}/user HTTP/1.1
 
-###
-
-GET {{url}}/sumMonth?nomeAmbiente=TUDOTUDO HTTP/1.1
+GET {{url}}/ambiente HTTP/1.1
 
 ###
 
-# POST {{url}}/abientes HTTP/1.1
-# Content-Type: application/json
+POST {{url}}/definirCor HTTP/1.1
+Content-Type: application/json
 
-# {
-#     "":""
-# }
+{
+	"r": "255",
+	"g": "255",
+	"b": "255",
+	"ips":["192.168.255.8"]
+}
+
+###
+
+POST {{url}}/ligar HTTP/1.1
+content-Type: application/json
+
+{
+	"idSala":1,
+	"nomeSala":"SALA-1B",
+	"ips":["192.168.255.8","192.168.255.7"]
+}
+
+###
+
+POST {{url}}/desligar HTTP/1.1
+content-Type: application/json
+
+{
+	"idSala":1,
+	"nomeSala":"SALA-1B",
+	"ips":["192.168.255.8","192.168.255.7"]
+}
+
+###
+POST {{url}}/month HTTP/1.1
+Content-Type: application/json
+
+{
+	"nomeSala":"SALA-1B"
+}
+
+###
+
+POST {{url}}/definirBrilho HTTP/1.1
+Content-Type: application/json
+
+{
+	"ips":["192.168.255.8"],
+	"idSala":1,
+	"nomeSala":"SALA-1B",
+	"brilho":1
+}
+
+###
+
+POST {{url}}/status HTTP/1.1
+Content-Type: application/json
+
+{
+	"ips":["192.168.0.237", "192.168.255.7"]
+}
+
+# POST {{url}}/ambientes HTTP/1.1
+
+###
+
+POST {{url}}/setFlow HTTP/1.1
+content-Type: application/json
+
+{
+	"idSala":1,
+	"nomeSala":"SALA-1B",
+	"ips":["192.168.255.8",""]
+}
+
+###
+
+POST {{url}}/bandtec HTTP/1.1
+content-Type: application/json
+
+{
+	"idSala":1,
+	"nomeSala":"SALA-1B",
+	"ips":["192.168.255.8",""]
+}
+
+
+###
+
+GET localhost:3333/userLogin HTTP/1.1

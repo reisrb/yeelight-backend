@@ -1,43 +1,46 @@
-def getSide(req, env, bulbs):
-    idEnv = int(req.args.get('idAmbiente'))
-    idSide = int(req.args.get('idLado'))
-    listBulbs = []
-    nameEnv = ''
+from yeelight import Bulb, discover_bulbs
 
-    for value in env:
-        if value.get('id') == idEnv:
-            nameEnv = value.get('nome')
-            for key in value.get('lados'): 
-                if key.get('id') == idSide:
-                    for ip in key.get('ips'):
-                        for bulb in bulbs:
-                            if(bulb._ip == ip):
-                                listBulbs.append(bulb)
-                                break
+def getIp(req): #recebendo req como paramentro que seria o ip da sala, nome e ips das lampadas
+    bulbs = []
+    idEnv = req.json.get('idSala')
+    nameEnv = req.json.get('nomeSala')
 
-    return (listBulbs, idEnv, nameEnv) 
+    bulbsList = discover_bulbs()
 
-def setSides(req, env, bulbs):
-    idEnv = int(req.args.get('idAmbiente'))
-    back = []
-    front = []
-    nameEnv = ''
+    for bulb in req.json.get('ips'):
+        for bulbWlan in bulbsList:
+            if bulb == bulbWlan['ip']:
+                bulbs.append(Bulb(bulb, effect="smooth",  duration=100))
+
+    if idEnv != None and nameEnv != None:
+        return (bulbs, nameEnv, idEnv)
+    else:
+        return bulbs
+
+
+# import getmac
+
+# def getMac(req): #recebendo req como paramentro que seria o ip da sala, nome e ips das lampadas
+#     bulbs = []
+#     idEnv = req.json.get('idSala')
+#     nameEnv = req.json.get('nomeSala')
+
+#     #pegar mac
+#     bulbsWlan = []
+
+#     bulbsList = discover_bulbs()
+
+#     for bulb in bulbsList:
+#         ip = bulb['ip']
+#         mac = getmac.get_mac_address(ip=ip)
+#         bulbsWlan.append({"ip": ip, "mac": mac})
     
-    for value in env:
-        if value.get('id') == idEnv:
-            nameEnv = value.get('nome')
-            for key in value.get('lados'): 
-                if key.get('nome') == "FRENTE":
-                    for ip in key.get('ips'):
-                        for bulb in bulbs:
-                            if(bulb._ip == ip):
-                                front.append(bulb)
-                                break
-                elif key.get('nome') == "TRAS":
-                    for ip in key.get('ips'):
-                        for bulb in bulbs:
-                            if(bulb._ip == ip):
-                                back.append(bulb)
-                                break
+#     for mac in req.json.get('mac'):
+#         for bulbLan in bulbsWlan:
+#             if mac == bulbLan['mac']:
+#                 bulbs.append(Bulb(bulbLan['ip'], effect="smooth",  duration=100))
 
-    return (front, back, idEnv, nameEnv)
+#     if idEnv != None and nameEnv != None:
+#         return (bulbs, nameEnv, idEnv)
+#     else:
+#         return bulbs

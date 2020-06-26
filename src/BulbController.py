@@ -1,115 +1,130 @@
-from yeelight import Bulb
-
+from yeelight import *
 import src.utils as utils
 import src.CronJob as cron
-import time
 
-lampadas = ['10.3.0.21', '192.168.255.14', '10.3.0.23']
+# todos os metodos utilizam da "classe" utils para o processamento e conversão dos ips do front para a lib da yeelight
 
-environments=[{"id": 1,"nome":"Biblioteca", "lados": [{"id":100,"nome": "FRENTE", "ips": [lampadas[0]]},{"id":0,"nome": "TUDO", "ips":[lampadas[0], lampadas[1]]},{"id":200,"nome": "TRAS", "ips": [lampadas[1]]}]},{"id": 2,"nome":"1B", "lados": [{"id":100, "nome": "FRENTE", "ips": [lampadas[2]]},{"id":200, "nome": "TRAS", "ips": [lampadas[2]]}]},{"id": 0,"nome":"TUDOTUDO", "lados": [{"id":0, "nome": "TUDO", "ips": [lampadas[0], lampadas[1], lampadas[2]]}]}]
-bulbs = []
-
-def getEnv():
-    return environments
-
-def start():
-    for value in environments:
-        for key in value.get('lados'): 
-            for ip in key.get('ips'):
-                try:
-                    bulbs.append(Bulb(ip, effect="smooth")) 
-                except Exception as e:
-                    print(e)
-
+# pegar estado atual da lampada especificada por parâmetro 
 def getProperties(bulb):
     return bulb.get_properties(requested_properties=[
-                          "power", "bright", "rgb", "color_mode", "flow", "name","ct",])
+        "power", "bright", "rgb", "color_mode", "flow", "name", "ct", ])
 
+# metodo a ser executado ao inicializar euma página web para ser a primeira rota do estado atual da lampada
 def getStatus(req):
-    listBulbs, _, _ = utils.getSide(req, environments, bulbs)
+    bulbs = utils.getIp(req)
+    print(bulbs[0])
+    return getProperties(bulbs[0])
 
-    return getProperties(listBulbs[0])
 
+# Aqui temos dois metodos iguais (turnOn e turnOff) com especificação para esquema de toggle não confudir o usuário
+# e ele desligar o front e a lampada ligar "do nada"
 def turnOn(req):
-    listBulbs, idEnv, nameEnv = utils.getSide(req, environments, bulbs)
-    status = getProperties(listBulbs[0])
+    ba = 0
+    bna = ""
+    bulbStatus = 0
 
-    for bulb in listBulbs:
+    bulbs, nameEnv, idEnv  = utils.getIp(req) # desestruturando o retorno em var's independentes
+
+    for bulb in bulbs:
         try:
             bulb.turn_on()
+            ba += 1
+            bulbStatus = bulb # setando na variavel pelo menos a ultima lampada que ligou com êxito
         except :
+            bna += f'({bulb})/mac\n'  # setando na variavel lampadas que não ligou com êxito
             pass
 
-    cron.enable(len(listBulbs), idEnv, nameEnv, status['bright'])
-
-    return status
+    bulbsOn = getProperties(bulbStatus) # pegando estado atual da lampada referência que ligou com êxito
+ 
+    cron.enable(ba, idEnv, nameEnv, bulbsOn['bright']) # ativando cron para a gravação de logs
+    return f'ligou {ba} ----- não ligou {bna}'
 
 def turnOff(req):
-    listBulbs, idEnv, nameEnv = utils.getSide(req, environments, bulbs)    
-    status = getProperties(listBulbs[0])
+    ba = 0
+    bna = ""
+    bulbStatus = 0
+    
+    bulbs, nameEnv, idEnv = utils.getIp(req)
 
-    for bulb in listBulbs:
+    for bulb in bulbs:
         try:
             bulb.turn_off()
+            ba += 1
+            bulbStatus = bulb
         except :
+            bna += f'({bulb})/mac\n'
             pass
-        
 
-    cron.disable(len(listBulbs), idEnv, nameEnv, status['bright'])
+    bulbsOn = getProperties(bulbStatus)
 
-    return status
+    cron.disable(ba, idEnv, nameEnv, bulbsOn['bright'])
+    return f'desligou {ba} ----- não desligou {bna}'
+
+
+# setar brilho repetindo basicamente o mesmo processo
 
 def setBright(req):
+    ba = 0
     bright = req.json.get('brilho')
-    
-    listBulbs, idEnv, nameEnv = utils.getSide(req, environments, bulbs)    
-    status = getProperties(listBulbs[0])
+    bulbs, nameEnv, idEnv = utils.getIp(req)
 
-    for bulb in listBulbs:
+    for bulb in bulbs:
         bulb.set_brightness(int(bright))
+        bulbsStatus = getProperties(bulb)
+        ba += 1
 
-    cron.edit(len(listBulbs), idEnv, nameEnv, status['bright'])
+    cron.edit(ba, idEnv, nameEnv, bulbsStatus['bright']) 
+    return f"Brilho alterado de {ba} lampadas para {bulbsStatus['bright']}"
 
-    return status
 
 def setColor(req):
-    listBulbs, _, _ = utils.getSide(req, environments, bulbs)
+    bulbs = utils.getIp(req)
 
-    r = req.json.get('r')
-    g = req.json.get('g')
-    b = req.json.get('b')
+    r = int(req.json.get('r'))
+    g = int(req.json.get('g'))
+    b = int(req.json.get('b'))
 
-    for bulb in listBulbs:
-        bulb.set_color_temp(4700)
-        bulb.set_rgb(r, g, b)
-        if r and g and b == 255:
-            bulb.set_color_temp(8000)
-        
+    for bulb in bulbs:
+        try:
+            bulb.set_rgb(r, g, b)
+            if r and g and b == 255:
+                bulb.set_color_temp(6491)
+        except:
+            pass
+
+
 def bandtecColor(req):
-    listBulbs, _, _ = utils.getSide(req, environments, bulbs)
-    idEnv = 0
-    nameEnv = 'TUDOTUDO'
+    bulbs = utils.getIp(req)
 
-    status = getProperties(listBulbs[0])
+    transitions = [
+        RGBTransition(7, 98, 200, duration=4500),
+        RGBTransition(99, 177, 188, duration=4500),
+        RGBTransition(237, 20, 91, duration=4500),
+        RGBTransition(239, 182, 97, duration=4500),
+    ]
+
+    flow = Flow(
+        count=0,
+        action=Flow.actions.recover,
+        transitions=transitions
+    )
+
+    for bulb in bulbs:
+        bulb.start_flow(flow)
+
+def flow(req):
+    transitions = [
+        HSVTransition(hue, 100, duration=500)
+               for hue in range(0, 359, 40)]
+
+    flow = Flow(
+        count=0,
+        transitions=transitions
+    )
+
+    bulbs = utils.getIp(req)
     
-    listBulbs[0].set_rgb(240, 10, 60)
-    listBulbs[1].set_rgb(239, 182, 97)
-    listBulbs[2].set_rgb(0, 131, 183)
-
-    for bulb in listBulbs:
-        bulb.turn_on()
-
-    cron.enable(len(listBulbs), idEnv, nameEnv, status['bright'])
+    for bulb in bulbs:
+        bulb.start_flow(flow)
 
 
-def projetor(req):
-
-    front, back, idEnv, nameEnv = utils.setSides(req, environments, bulbs)
-
-    for bulb in front:
-        bulb.set_brightness(1)
-        cron.edit(len(front), idEnv, nameEnv, 1)
-
-    for bulb in back:
-        bulb.set_brightness(40)
-        cron.edit(len(back), idEnv, nameEnv, 40)
