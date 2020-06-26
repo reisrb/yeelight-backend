@@ -11,6 +11,8 @@ def getIp(req): #recebendo req como paramentro que seria o ip da sala, nome e ip
         for bulbWlan in bulbsList:
             if bulb == bulbWlan['ip']:
                 bulbs.append(Bulb(bulb, effect="smooth",  duration=100))
+            else:
+                print('Nao ligou', bulbWlan['ip'])
 
     if idEnv != None and nameEnv != None:
         return (bulbs, nameEnv, idEnv)
