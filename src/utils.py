@@ -7,7 +7,13 @@ def getIp(req): #recebendo req como paramentro que seria o ip da sala, nome e ip
 
     bulbsList = discover_bulbs()
 
-    for bulb in req.json.get('ips'):
+    print(idEnv, nameEnv, req.json.get('ips'))
+
+    ipEstatico = ['192.168.255.7']
+
+    # for bulb in ipEstatico:
+    # for bulb in req.json.get('ips'):
+    for bulb in ipEstatico:
         for bulbWlan in bulbsList:
             if bulb == bulbWlan['ip']:
                 bulbs.append(Bulb(bulb, effect="smooth",  duration=100))

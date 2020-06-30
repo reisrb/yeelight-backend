@@ -5,7 +5,6 @@ path = os.path.dirname(os.path.abspath(__file__))
 # def instructions(req, env):
 def instructions(req):
     nameEnv = req.json.get('nomeSala')
-    mes = '05'
     total = 0.0
 
     try:
@@ -19,3 +18,4 @@ def instructions(req):
         pass
             
     return f'{total:.5f}' if total != 0.0 else 'Sem registros'
+
