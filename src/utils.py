@@ -9,7 +9,9 @@ def getIp(req): #recebendo req como paramentro que seria o ip da sala, nome e ip
 
     print(idEnv, nameEnv, req.json.get('ips'))
 
-    ipEstatico = ['192.168.255.7']
+    ipEstatico = readConfig()
+
+    print(ipEstatico)
 
     # for bulb in ipEstatico:
     # for bulb in req.json.get('ips'):
@@ -24,6 +26,27 @@ def getIp(req): #recebendo req como paramentro que seria o ip da sala, nome e ip
         return (bulbs, nameEnv, idEnv)
     else:
         return bulbs
+
+
+import os
+
+path = os.path.dirname(os.path.abspath(__file__))
+
+# def instructions(req, env):
+def readConfig():
+    ips = []
+
+    try:
+        f = open(f'{path}/../lampadas/ips.txt', 'r')
+        for line in f:
+            try:
+                ips.append(line.strip()) 
+            except ValueError:
+                print(f'{line} is not a number!')
+    except:
+        pass
+            
+    return ips
 
 
 # import getmac
