@@ -5,22 +5,22 @@ def getIp(req): #recebendo req como paramentro que seria o ip da sala, nome e ip
     idEnv = req.json.get('idSala')
     nameEnv = req.json.get('nomeSala')
 
-    bulbsList = discover_bulbs()
+    # bulbsList = discover_bulbs()
 
     print(idEnv, nameEnv, req.json.get('ips'))
 
     ipEstatico = readConfig()
 
-    print(ipEstatico)
+    # print(ipEstatico)
 
     # for bulb in ipEstatico:
     # for bulb in req.json.get('ips'):
     for bulb in ipEstatico:
-        for bulbWlan in bulbsList:
-            if bulb == bulbWlan['ip']:
-                bulbs.append(Bulb(bulb, effect="smooth",  duration=100))
-            else:
-                print('Nao ligou', bulbWlan['ip'])
+        # for bulbWlan in bulbsList:
+        #     if bulb == bulbWlan['ip']:
+        bulbs.append(Bulb(bulb, effect="smooth",  duration=100))
+            # else:
+            #     print('Nao ligou', bulbWlan['ip'])
 
     if idEnv != None and nameEnv != None:
         return (bulbs, nameEnv, idEnv)

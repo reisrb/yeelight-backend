@@ -21,8 +21,6 @@ def turnOn(req):
     # desestruturando o retorno em var's independentes
     bulbs, nameEnv, idEnv = utils.getIp(req)
 
-    print(bulbs)
-
     for bulb in bulbs:
         bulb.turn_on()
 
@@ -35,8 +33,7 @@ def turnOn(req):
 
 def turnOff(req):
     bulbs, nameEnv, idEnv = utils.getIp(req)
-
-    print(bulbs)
+    
     for bulb in bulbs:
         bulb.turn_off()
 
