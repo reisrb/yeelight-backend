@@ -9,13 +9,13 @@ def getIp(req): #recebendo req como paramentro que seria o ip da sala, nome e ip
 
     print(idEnv, nameEnv, req.json.get('ips'))
 
-    ipEstatico = readConfig()
+    # ipEstatico = readConfig()
 
     # print(ipEstatico)
 
     # for bulb in ipEstatico:
-    # for bulb in req.json.get('ips'):
-    for bulb in ipEstatico:
+    for bulb in req.json.get('ips'):
+    # for bulb in ipEstatico:
         # for bulbWlan in bulbsList:
         #     if bulb == bulbWlan['ip']:
         bulbs.append(Bulb(bulb, effect="smooth",  duration=100))
