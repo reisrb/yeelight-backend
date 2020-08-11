@@ -2,11 +2,11 @@ from crontab import CronTab
 import os
 
 path = os.path.dirname(os.path.abspath(__file__)) 
-my_cron = CronTab(user='reis')
+#my_cron = CronTab(user='')
 
 def verification(amount, idEnv, name, bright): # verificando se já existe a rotina cron
     global my_cron 
-    my_cron = CronTab(user='reis')
+    my_cron = CronTab(user='')
 
     for job in my_cron:
         if job.comment==idEnv:
