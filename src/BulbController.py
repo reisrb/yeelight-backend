@@ -28,13 +28,9 @@ def turnOn(req):
     for bulb in bulbs:
         try:
             bulb.turn_on()
-            print('ligou')
             ba += 1
-            print('contou')
             bulbStatus = bulb # setando na variavel pelo menos a ultima lampada que ligou com êxito
-            print('atribuiu')
         except :
-            print('não funfou')
             bna += f'({bulb})/mac\n'  # setando na variavel lampadas que não ligou com êxito
             pass
 
