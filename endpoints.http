@@ -24,7 +24,7 @@ content-Type: application/json
 {
 	"idSala":1,
 	"nomeSala":"SALA-1B",
-	"ips":["192.168.255.8","192.168.255.7"]
+	"ips":["10.3.0.200"]
 }
 
 ###
@@ -35,7 +35,7 @@ content-Type: application/json
 {
 	"idSala":1,
 	"nomeSala":"SALA-1B",
-	"ips":["192.168.255.8","192.168.255.7"]
+	"ips":["10.3.0.200"]
 }
 
 ###
