@@ -4,7 +4,7 @@ import src.CronJob as cron
 
 # todos os metodos utilizam da "classe" utils para o processamento e conversão dos ips do front para a lib da yeelight
 
-# pegar estado atual da lampada especificada por parâmetro 
+# pegar estado atual da lampada especificada por parâmetro
 def getProperties(bulb):
     return bulb.get_properties(requested_properties=[
         "power", "bright", "rgb", "color_mode", "flow", "name", "ct", ])
@@ -12,18 +12,20 @@ def getProperties(bulb):
 # metodo a ser executado ao inicializar euma página web para ser a primeira rota do estado atual da lampada
 def getStatus(req):
     bulbs = utils.getIp(req)
-    print(bulbs[0])
+    print(bulbs)
     return getProperties(bulbs[0])
 
+    
 
 # Aqui temos dois metodos iguais (turnOn e turnOff) com especificação para esquema de toggle não confudir o usuário
 # e ele desligar o front e a lampada ligar "do nada"
 def turnOn(req):
+    # desestruturando o retorno em var's independentes
+    bulbs, nameEnv, idEnv = utils.getIp(req)
     ba = 0
-    bna = ""
-    bulbStatus = 0
+    bna = 0
 
-    bulbs, nameEnv, idEnv  = utils.getIp(req) # desestruturando o retorno em var's independentes
+    print(bulbs)
 
     for bulb in bulbs:
         try:
@@ -40,42 +42,27 @@ def turnOn(req):
     return f'ligou {ba} ----- não ligou {bna}'
 
 def turnOff(req):
-    ba = 0
-    bna = ""
-    bulbStatus = 0
-    
     bulbs, nameEnv, idEnv = utils.getIp(req)
-
+    
     for bulb in bulbs:
-        try:
-            bulb.turn_off()
-            ba += 1
-            bulbStatus = bulb
-        except :
-            bna += f'({bulb})/mac\n'
-            pass
+        bulb.turn_off()
 
-    bulbsOn = getProperties(bulbStatus)
+    bulbsOn = getProperties(bulbs[0])
 
-    cron.disable(ba, idEnv, nameEnv, bulbsOn['bright'])
-    return f'desligou {ba} ----- não desligou {bna}'
-
+    cron.disable(len(bulbs), idEnv, nameEnv, bulbsOn['bright'])
+    return f'desligou {bulbs}'
 
 # setar brilho repetindo basicamente o mesmo processo
-
 def setBright(req):
-    ba = 0
     bright = req.json.get('brilho')
     bulbs, nameEnv, idEnv = utils.getIp(req)
 
     for bulb in bulbs:
         bulb.set_brightness(int(bright))
         bulbsStatus = getProperties(bulb)
-        ba += 1
 
-    cron.edit(ba, idEnv, nameEnv, bulbsStatus['bright']) 
-    return f"Brilho alterado de {ba} lampadas para {bulbsStatus['bright']}"
-
+    cron.edit(len(bulbs), idEnv, nameEnv, bulbsStatus['bright'])
+    return f"Brilho alterado de {bulbs} lampadas para {bulbsStatus['bright']}"
 
 def setColor(req):
     bulbs = utils.getIp(req)
@@ -85,13 +72,9 @@ def setColor(req):
     b = int(req.json.get('b'))
 
     for bulb in bulbs:
-        try:
-            bulb.set_rgb(r, g, b)
-            if r and g and b == 255:
-                bulb.set_color_temp(6491)
-        except:
-            pass
-
+        bulb.set_rgb(r, g, b)
+        if r and g and b == 255:
+            bulb.set_color_temp(6491)
 
 def bandtecColor(req):
     bulbs = utils.getIp(req)
@@ -115,7 +98,7 @@ def bandtecColor(req):
 def flow(req):
     transitions = [
         HSVTransition(hue, 100, duration=500)
-               for hue in range(0, 359, 40)]
+        for hue in range(0, 359, 40)]
 
     flow = Flow(
         count=0,
@@ -123,8 +106,6 @@ def flow(req):
     )
 
     bulbs = utils.getIp(req)
-    
+
     for bulb in bulbs:
         bulb.start_flow(flow)
-
-

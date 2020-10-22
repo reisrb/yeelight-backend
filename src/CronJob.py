@@ -5,9 +5,10 @@ import os
 
 path = os.path.dirname(os.path.abspath(__file__)) 
 
+my_cron = CronTab(user=getpass.getuser())
+
 def verification(amount, idEnv, name, bright): # verificando se já existe a rotina cron
     global my_cron 
-    my_cron = CronTab(user=getpass.getuser())
 
     for job in my_cron:
         if job.comment==idEnv:
@@ -19,13 +20,7 @@ def verification(amount, idEnv, name, bright): # verificando se já existe a rot
 
 def enable(amount, idEnv, name, bright):
     job = verification(amount, str(idEnv), name, bright) # verificando se já existe a rotina cron
-    
     job.enable()
-    
-    if job.comment=='0':
-        for jobs in my_cron:
-            if jobs.comment != '0':
-                jobs.enable()
 
     my_cron.write()
 
@@ -40,7 +35,4 @@ def disable(amount, idEnv, name, bright):
     job = verification(amount, str(idEnv), name, bright)
     job.enable(False)
     
-    if job.comment=='0':
-        for jobs in my_cron:
-            jobs.enable(False)
     my_cron.write()

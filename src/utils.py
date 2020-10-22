@@ -13,7 +13,6 @@ def getIp(req): #recebendo req como paramentro que seria o ip da sala, nome e ip
     else:
         return bulbs
 
-
 # import getmac
 
 # def getMac(req): #recebendo req como paramentro que seria o ip da sala, nome e ips das lampadas
